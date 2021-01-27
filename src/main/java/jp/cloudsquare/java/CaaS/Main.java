@@ -5,6 +5,8 @@
  */
 package jp.cloudsquare.java.CaaS;
 
+import java.util.Map;
+
 /**
  *
  * @author inaba
@@ -16,7 +18,12 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        PropertyData propertyData = new PropertyData("./example.properties");
+        PropertyData propertyDataFiles = new PropertyData("./caas_propertyfiles.properties");
+        for(Map.Entry<Object, Object> entry : propertyDataFiles.properties.entrySet()) {
+            System.out.println(entry.getKey());
+            PropertyData propertyData = new PropertyData((String)entry.getValue());
+        }
+        
     }
     
 }

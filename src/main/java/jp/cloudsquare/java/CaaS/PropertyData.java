@@ -17,7 +17,7 @@ import java.util.Properties;
  * @author inaba
  */
 public class PropertyData {
-    Properties properties = new Properties();
+    public Properties properties = new Properties();
 
     public PropertyData(String filePath) {
         try(BufferedReader bufferedReader =  Files.newBufferedReader(Paths.get(filePath), StandardCharsets.UTF_8);) {
