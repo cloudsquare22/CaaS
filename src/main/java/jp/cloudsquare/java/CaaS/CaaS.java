@@ -22,10 +22,10 @@ public class CaaS {
     }
     
     public void start() {
-        PropertyData propertyDataFiles = new PropertyData("./caas_propertyfiles.properties");
+        PropertyData propertyDataFiles = new PropertyData(Constant.FILE_CAAS_PROPERTYFILES);
         for(Map.Entry<Object, Object> entry : propertyDataFiles.properties.entrySet()) {
             String key = (String)entry.getKey();
-            System.out.println(key);
+            System.out.println("Target Propety:" + key);
             PropertyData propertyData = new PropertyData((String)entry.getValue());
             propertyDataMap.put(key, propertyData);
         }

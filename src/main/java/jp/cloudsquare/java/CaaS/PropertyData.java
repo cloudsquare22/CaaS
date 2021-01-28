@@ -22,14 +22,14 @@ public class PropertyData {
     public PropertyData(String filePath) {
         try(BufferedReader bufferedReader =  Files.newBufferedReader(Paths.get(filePath), StandardCharsets.UTF_8);) {
             properties.load(bufferedReader);
-            for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-                Object key = entry.getKey();
-                Object val = entry.getValue();
-                System.out.println(key + ":" + val);
-            }
+//            for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+//                Object key = entry.getKey();
+//                Object val = entry.getValue();
+//                System.out.println(key + ":" + val);
+//            }
         }
         catch(Exception e) {
-            System.out.println(e);
+            System.err.println(e);
         }
     }
 }
