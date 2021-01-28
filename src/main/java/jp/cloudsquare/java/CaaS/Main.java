@@ -17,11 +17,16 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        PropertyData propertyDataFiles = new PropertyData("./caas_propertyfiles.properties");
-        for(Map.Entry<Object, Object> entry : propertyDataFiles.properties.entrySet()) {
-            System.out.println(entry.getKey());
-            PropertyData propertyData = new PropertyData((String)entry.getValue());
+        CaaS.instance.start();
+        System.out.println("CaaS start");
+        
+        while(true) {
+            try {
+                Thread.sleep(1000);
+            }
+            catch(Exception e) {
+                System.err.println(e);
+            }
         }
         
     }
