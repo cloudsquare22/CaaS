@@ -6,9 +6,12 @@ apply plugin: 'application'
 mainClassName = 'jp.cloudsquare.java.CaaS.Main'
 
 repositories {
+    mavenCentral()
     jcenter()
 }
 
 dependencies {
+    implementation project(':BuiltInHttpServer')
+    implementation 'org.apache.httpcomponents:httpcore:4.4.14'
     testImplementation     'junit:junit:4.13'
 }

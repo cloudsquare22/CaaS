@@ -5,7 +5,7 @@
  */
 package jp.cloudsquare.java.CaaS;
 
-import java.util.Map;
+import jp.cloudsquare.java.BuiltInHttpServer.HttpServer;
 
 /**
  *
@@ -20,6 +20,10 @@ public class Main {
         CaaS.instance.start();
         System.out.println("CaaS start");
         
+        HttpRequestProcessHandler httpRequestProcessHandler = new HttpRequestProcessHandler();
+        HttpServer restServer = new HttpServer(8080, "REST IF", httpRequestProcessHandler);
+        restServer.start();
+
         while(true) {
             try {
                 Thread.sleep(1000);
