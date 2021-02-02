@@ -16,7 +16,7 @@ public class CaaS {
     
     static public CaaS instance = new CaaS();
     
-    private HashMap<String, PropertyData> propertyDataMap = new HashMap<>();
+    public HashMap<String, PropertyData> propertyDataMap = new HashMap<>();
 
     public CaaS() {
     }

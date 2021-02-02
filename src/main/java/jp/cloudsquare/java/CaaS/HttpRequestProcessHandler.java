@@ -6,8 +6,8 @@
 package jp.cloudsquare.java.CaaS;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.Map;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -57,8 +57,8 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         String target = request.getRequestLine().getUri();
 
         response.setStatusCode(HttpStatus.SC_OK);
-        StringEntity stringEntity = new StringEntity("OK", ContentType.create("text/html", (Charset) null));
-        response.setEntity(stringEntity);
+//        StringEntity stringEntity = new StringEntity("OK", ContentType.create("text/html", (Charset) null));
+//        response.setEntity(stringEntity);
 
         System.out.println("Process after Response : " + response);
         System.out.println("Process after Response : " + response.getEntity());
@@ -98,6 +98,35 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
 
     void processGet(final HttpRequest request, final HttpResponse response, final HttpContext context) {
         System.out.println("Process Get");
+        try {
+            System.out.println(request.getRequestLine().getUri());
+            String uri = request.getRequestLine().getUri();
+            String[] uriSplit = uri.split("/");
+            StringEntity stringEntity = null;
+            if(uriSplit.length > 0) {
+                String body = "{";
+                PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[1]);
+                if(propertyData != null) {
+                    int count = 0;
+                    for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
+                        body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
+                        count++;
+                        if(count < propertyData.properties.size()) {
+                            body = body + ",";
+                        }
+                    }
+                }
+                body = body + "}";
+                stringEntity = new StringEntity(body, ContentType.create("text/json "));
+            }
+            else {
+                stringEntity = new StringEntity("{}", ContentType.create("text/json "));
+            }
+            response.setEntity(stringEntity);
+        }
+        catch(Exception e) {
+            System.err.println(e);
+        }
     }
 
     void processPost(final HttpRequest request, final HttpResponse response, final HttpContext context) {
