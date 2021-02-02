@@ -32,4 +32,19 @@ public class PropertyData {
             System.err.println(e);
         }
     }
+    
+    public int getIntValue(String key, int defaultValue) {
+        int result = defaultValue;
+        String value = this.properties.getProperty(key);
+        if(value != null) {
+            try {
+                int changeValue = Integer.parseInt(value);
+                result = changeValue;
+            }
+            catch(Exception e) {
+                System.err.println("Unable to convert String to Int.:" + value);
+            }
+        }
+        return result;
+    }
 }

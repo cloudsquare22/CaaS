@@ -12,16 +12,19 @@ import jp.cloudsquare.java.BuiltInHttpServer.HttpServer;
  * @author inaba
  */
 public class Main {
+    static public PropertyData caasPropertyData;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        caasPropertyData = new PropertyData("./caas.properties");
+        int port = Main.caasPropertyData.getIntValue("restserver.port", 8080);
         CaaS.instance.start();
         System.out.println("CaaS start");
         
         HttpRequestProcessHandler httpRequestProcessHandler = new HttpRequestProcessHandler();
-        HttpServer restServer = new HttpServer(8080, "REST IF", httpRequestProcessHandler);
+        HttpServer restServer = new HttpServer(port, "REST IF", httpRequestProcessHandler);
         restServer.start();
 
         while(true) {
