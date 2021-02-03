@@ -34,29 +34,26 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         System.out.println("Context : " + context);
         String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
         switch(method) {
-            case "GET":
-                processGet(request, response, context);
-                break;
-            case "POST":
-                processPost(request, response, context);
-                break;
-            case "PUT":
-                processPut(request, response, context);
-                break;
-            case "DELETE":
-                processDelete(request, response, context);
-                break;
-            case "HEAD":
-                processHead(request, response, context);
-                break;
-            default:
-                throw new MethodNotSupportedException(method + " method not supported");
+            case "GET" -> processGet(request, response, context);
+            default -> response.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
         }
-        /* 他にはOPTIONS、TRACE、CONNECTがある */
+//            case "POST":
+//                processPost(request, response, context);
+//                break;
+//            case "PUT":
+//                processPut(request, response, context);
+//                break;
+//            case "DELETE":
+//                processDelete(request, response, context);
+//                break;
+//            case "HEAD":
+//                processHead(request, response, context);
+//                break;
+                /* 他にはOPTIONS、TRACE、CONNECTがある */
 
         String target = request.getRequestLine().getUri();
 
-        response.setStatusCode(HttpStatus.SC_OK);
+//        response.setStatusCode(HttpStatus.SC_OK);
 //        StringEntity stringEntity = new StringEntity("OK", ContentType.create("text/html", (Charset) null));
 //        response.setEntity(stringEntity);
 
@@ -115,14 +112,18 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                             body = body + ",";
                         }
                     }
+                    body = body + "}";
+                    stringEntity = new StringEntity(body, ContentType.create("text/json "));
+                    response.setStatusCode(HttpStatus.SC_OK);
+                    response.setEntity(stringEntity);
                 }
-                body = body + "}";
-                stringEntity = new StringEntity(body, ContentType.create("text/json "));
+                else {
+                    response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+                }
             }
             else {
-                stringEntity = new StringEntity("{}", ContentType.create("text/json "));
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
             }
-            response.setEntity(stringEntity);
         }
         catch(Exception e) {
             System.err.println(e);
