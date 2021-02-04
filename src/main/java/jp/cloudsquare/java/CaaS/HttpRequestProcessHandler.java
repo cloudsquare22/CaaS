@@ -99,26 +99,11 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
             System.out.println(request.getRequestLine().getUri());
             String uri = request.getRequestLine().getUri();
             String[] uriSplit = uri.split("/");
-            StringEntity stringEntity = null;
-            if(uriSplit.length > 0) {
-                String body = "{";
-                PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[1]);
-                if(propertyData != null) {
-                    int count = 0;
-                    for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
-                        body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
-                        count++;
-                        if(count < propertyData.properties.size()) {
-                            body = body + ",";
-                        }
-                    }
-                    body = body + "}";
-                    stringEntity = new StringEntity(body, ContentType.create("text/json "));
-                    response.setStatusCode(HttpStatus.SC_OK);
-                    response.setEntity(stringEntity);
-                }
-                else {
-                    response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            if(uriSplit.length > 1) {
+                switch(uriSplit[1]) {
+                    case "all" -> processGetAll(uriSplit, response);
+                    case "one" -> processGetOne(uriSplit, response);
+                    default -> response.setStatusCode(HttpStatus.SC_NOT_FOUND);                        
                 }
             }
             else {
@@ -129,7 +114,66 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
             System.err.println(e);
         }
     }
+    
+    void processGetAll(final String[] uriSplit, final HttpResponse response) {
+        System.out.println("processGetAll");
+        
+        StringEntity stringEntity = null;
+        if(uriSplit.length == 3) {
+            String body = "{";
+            PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
+            if(propertyData != null) {
+                int count = 0;
+                for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
+                    body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
+                    count++;
+                    if(count < propertyData.properties.size()) {
+                        body = body + ",";
+                    }
+                }
+                body = body + "}";
+                stringEntity = new StringEntity(body, ContentType.create("text/json "));
+                response.setStatusCode(HttpStatus.SC_OK);
+                response.setEntity(stringEntity);
+            }
+            else {
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            }
+        }
+        else {
+            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+        }
+    }
 
+    void processGetOne(final String[] uriSplit, final HttpResponse response) {
+        System.out.println("processGetAll");
+        
+        StringEntity stringEntity = null;
+        if(uriSplit.length == 4) {
+            PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
+            if(propertyData != null) {
+                String value = (String)propertyData.properties.get(uriSplit[3]);
+                if(value != null) {
+                    String body = "{";
+                    body = body + "\"" + uriSplit[3] + "\":" + "\"" + value + "\"";
+                body = body + "}";
+                stringEntity = new StringEntity(body, ContentType.create("text/json "));
+                response.setStatusCode(HttpStatus.SC_OK);
+                response.setEntity(stringEntity);
+                }
+                else {
+                    response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+                }
+            }
+            else {
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            }
+        }
+        else {
+            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+        }
+    }
+    
     void processPost(final HttpRequest request, final HttpResponse response, final HttpContext context) {
         System.out.println("Process Post");
     }
