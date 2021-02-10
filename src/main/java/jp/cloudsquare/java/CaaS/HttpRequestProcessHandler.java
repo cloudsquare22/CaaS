@@ -103,6 +103,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 switch(uriSplit[1]) {
                     case "all" -> processGetAll(uriSplit, response);
                     case "one" -> processGetOne(uriSplit, response);
+                    case "reload" -> processGetReloadAll(uriSplit, response);
                     default -> response.setStatusCode(HttpStatus.SC_NOT_FOUND);                        
                 }
             }
@@ -164,6 +165,40 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 else {
                     response.setStatusCode(HttpStatus.SC_NOT_FOUND);
                 }
+            }
+            else {
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            }
+        }
+        else {
+            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+        }
+    }
+
+    void processGetReloadAll(final String[] uriSplit, final HttpResponse response) {
+        System.out.println("processGetReloadAll");
+        
+        StringEntity stringEntity = null;
+        if(uriSplit.length == 3) {
+            String body = "{";
+
+            CaaS caas = CaaS.instance;
+            String filepath = caas.propertyDataFiles.properties.getProperty(uriSplit[2]);
+            if(filepath != null) {
+                PropertyData propertyData = new PropertyData(filepath);
+                caas.propertyDataMap.put(uriSplit[2], propertyData);
+               int count = 0;
+                for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
+                    body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
+                    count++;
+                    if(count < propertyData.properties.size()) {
+                        body = body + ",";
+                    }
+                }
+                body = body + "}";
+                stringEntity = new StringEntity(body, ContentType.create("text/json "));
+                response.setStatusCode(HttpStatus.SC_OK);
+                response.setEntity(stringEntity);
             }
             else {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);

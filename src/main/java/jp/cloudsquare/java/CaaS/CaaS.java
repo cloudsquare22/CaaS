@@ -16,18 +16,19 @@ public class CaaS {
     
     static public CaaS instance = new CaaS();
     
+    public PropertyData propertyDataFiles = null;
     public HashMap<String, PropertyData> propertyDataMap = new HashMap<>();
 
     public CaaS() {
     }
     
     public void start() {
-        PropertyData propertyDataFiles = new PropertyData(Constant.FILE_CAAS_PROPERTYFILES);
+        this.propertyDataFiles = new PropertyData(Constant.FILE_CAAS_PROPERTYFILES);
         for(Map.Entry<Object, Object> entry : propertyDataFiles.properties.entrySet()) {
             String key = (String)entry.getKey();
             System.out.println("Target Propety:" + key);
             PropertyData propertyData = new PropertyData((String)entry.getValue());
-            propertyDataMap.put(key, propertyData);
+            this.propertyDataMap.put(key, propertyData);
         }
     }
     

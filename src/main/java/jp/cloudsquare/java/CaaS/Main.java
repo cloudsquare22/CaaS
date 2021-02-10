@@ -5,6 +5,7 @@
  */
 package jp.cloudsquare.java.CaaS;
 
+import java.io.Console;
 import jp.cloudsquare.java.BuiltInHttpServer.HttpServer;
 
 /**
@@ -18,7 +19,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        caasPropertyData = new PropertyData("./caas.properties");
+        caasPropertyData = new PropertyData(Constant.FILE_CAAS);
         int port = Main.caasPropertyData.getIntValue("restserver.port", 8080);
         CaaS.instance.start();
         System.out.println("CaaS start");
