@@ -8,6 +8,7 @@ package jp.cloudsquare.java.CaaS;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -121,18 +122,9 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         
         StringEntity stringEntity = null;
         if(uriSplit.length == 3) {
-            String body = "{";
             PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
             if(propertyData != null) {
-                int count = 0;
-                for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
-                    body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
-                    count++;
-                    if(count < propertyData.properties.size()) {
-                        body = body + ",";
-                    }
-                }
-                body = body + "}";
+                String body = makeBodySJSON(propertyData);
                 stringEntity = new StringEntity(body, ContentType.create("text/json "));
                 response.setStatusCode(HttpStatus.SC_OK);
                 response.setEntity(stringEntity);
@@ -180,22 +172,12 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         
         StringEntity stringEntity = null;
         if(uriSplit.length == 3) {
-            String body = "{";
-
             CaaS caas = CaaS.instance;
             String filepath = caas.propertyDataFiles.properties.getProperty(uriSplit[2]);
             if(filepath != null) {
                 PropertyData propertyData = new PropertyData(filepath);
                 caas.propertyDataMap.put(uriSplit[2], propertyData);
-               int count = 0;
-                for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
-                    body = body + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
-                    count++;
-                    if(count < propertyData.properties.size()) {
-                        body = body + ",";
-                    }
-                }
-                body = body + "}";
+                String body = makeBodySJSON(propertyData);
                 stringEntity = new StringEntity(body, ContentType.create("text/json "));
                 response.setStatusCode(HttpStatus.SC_OK);
                 response.setEntity(stringEntity);
@@ -223,6 +205,20 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
 
     void processHead(final HttpRequest request, final HttpResponse response, final HttpContext context) {
         System.out.println("Process Head");
+    }
+    
+    String makeBodySJSON(PropertyData propertyData) {
+        String result = "{";
+        int count = 0;
+        for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
+            result = result + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
+            count++;
+            if(count < propertyData.properties.size()) {
+                result = result + ",";
+            }
+        }
+        result = result + "}";
+        return result;    
     }
     
 }
