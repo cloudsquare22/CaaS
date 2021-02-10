@@ -12,4 +12,6 @@ package jp.cloudsquare.java.CaaS;
 public class Constant {
     static public String FILE_CAAS = "./caas.properties";
     static public String FILE_CAAS_PROPERTYFILES = "./caas_propertyfiles.properties";
+    
+    static public String CONTENT_TYPE_JSON = "text/json";
 }

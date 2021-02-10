@@ -8,12 +8,10 @@ package jp.cloudsquare.java.CaaS;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.MethodNotSupportedException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
@@ -120,14 +118,11 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
     void processGetAll(final String[] uriSplit, final HttpResponse response) {
         System.out.println("processGetAll");
         
-        StringEntity stringEntity = null;
         if(uriSplit.length == 3) {
             PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
             if(propertyData != null) {
                 String body = makeBodySJSON(propertyData);
-                stringEntity = new StringEntity(body, ContentType.create("text/json "));
-                response.setStatusCode(HttpStatus.SC_OK);
-                response.setEntity(stringEntity);
+                makeResponseOK(response, body);
             }
             else {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
@@ -141,7 +136,6 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
     void processGetOne(final String[] uriSplit, final HttpResponse response) {
         System.out.println("processGetAll");
         
-        StringEntity stringEntity = null;
         if(uriSplit.length == 4) {
             PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
             if(propertyData != null) {
@@ -149,10 +143,8 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 if(value != null) {
                     String body = "{";
                     body = body + "\"" + uriSplit[3] + "\":" + "\"" + value + "\"";
-                body = body + "}";
-                stringEntity = new StringEntity(body, ContentType.create("text/json "));
-                response.setStatusCode(HttpStatus.SC_OK);
-                response.setEntity(stringEntity);
+                    body = body + "}";
+                    makeResponseOK(response, body);
                 }
                 else {
                     response.setStatusCode(HttpStatus.SC_NOT_FOUND);
@@ -170,7 +162,6 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
     void processGetReloadAll(final String[] uriSplit, final HttpResponse response) {
         System.out.println("processGetReloadAll");
         
-        StringEntity stringEntity = null;
         if(uriSplit.length == 3) {
             CaaS caas = CaaS.instance;
             String filepath = caas.propertyDataFiles.properties.getProperty(uriSplit[2]);
@@ -178,9 +169,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 PropertyData propertyData = new PropertyData(filepath);
                 caas.propertyDataMap.put(uriSplit[2], propertyData);
                 String body = makeBodySJSON(propertyData);
-                stringEntity = new StringEntity(body, ContentType.create("text/json "));
-                response.setStatusCode(HttpStatus.SC_OK);
-                response.setEntity(stringEntity);
+                makeResponseOK(response, body);
             }
             else {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
@@ -219,6 +208,12 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         }
         result = result + "}";
         return result;    
+    }
+    
+    void makeResponseOK(final HttpResponse response, String body) {
+        StringEntity stringEntity = new StringEntity(body, ContentType.create(Constant.CONTENT_TYPE_JSON));
+        response.setStatusCode(HttpStatus.SC_OK);
+        response.setEntity(stringEntity);
     }
     
 }
