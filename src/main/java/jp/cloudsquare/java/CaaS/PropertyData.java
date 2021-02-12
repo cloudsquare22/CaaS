@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -41,7 +40,7 @@ public class PropertyData {
                 int changeValue = Integer.parseInt(value);
                 result = changeValue;
             }
-            catch(Exception e) {
+            catch(NumberFormatException e) {
                 System.err.println("Unable to convert String to Int.:" + value);
             }
         }

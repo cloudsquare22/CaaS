@@ -5,8 +5,8 @@
  */
 package jp.cloudsquare.java.CaaS;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -17,19 +17,16 @@ public class CaaS {
     static public CaaS instance = new CaaS();
     
     public PropertyData propertyDataFiles = null;
-    public HashMap<String, PropertyData> propertyDataMap = new HashMap<>();
+    public ConcurrentHashMap<String, PropertyData> propertyDataMap = new ConcurrentHashMap<>();
 
-    public CaaS() {
-    }
-    
     public void start() {
         this.propertyDataFiles = new PropertyData(Constant.FILE_CAAS_PROPERTYFILES);
-        for(Map.Entry<Object, Object> entry : propertyDataFiles.properties.entrySet()) {
+        propertyDataFiles.properties.entrySet().forEach(entry -> {
             String key = (String)entry.getKey();
             System.out.println("Target Propety:" + key);
             PropertyData propertyData = new PropertyData((String)entry.getValue());
             this.propertyDataMap.put(key, propertyData);
-        }
+        });
     }
     
 }

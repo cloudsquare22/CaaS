@@ -5,7 +5,6 @@
  */
 package jp.cloudsquare.java.CaaS;
 
-import java.io.Console;
 import jp.cloudsquare.java.BuiltInHttpServer.HttpServer;
 
 /**

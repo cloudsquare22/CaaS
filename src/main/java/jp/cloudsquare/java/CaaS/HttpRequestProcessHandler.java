@@ -50,7 +50,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
 //                break;
                 /* ëºÇ…ÇÕOPTIONSÅATRACEÅACONNECTÇ™Ç†ÇÈ */
 
-        String target = request.getRequestLine().getUri();
+//        String target = request.getRequestLine().getUri();
 
 //        response.setStatusCode(HttpStatus.SC_OK);
 //        StringEntity stringEntity = new StringEntity("OK", ContentType.create("text/html", (Charset) null));
@@ -110,8 +110,9 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
             }
         }
-        catch(Exception e) {
+        catch(IllegalStateException e) {
             System.err.println(e);
+            response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         }
     }
     
@@ -168,8 +169,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
             if(filepath != null) {
                 PropertyData propertyData = new PropertyData(filepath);
                 caas.propertyDataMap.put(uriSplit[2], propertyData);
-                String body = makeBodySJSON(propertyData);
-                makeResponseOK(response, body);
+                processGetAll(uriSplit, response);
             }
             else {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
