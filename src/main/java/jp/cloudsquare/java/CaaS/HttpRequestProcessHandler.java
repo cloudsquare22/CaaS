@@ -97,11 +97,17 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         try {
             System.out.println(request.getRequestLine().getUri());
             String uri = request.getRequestLine().getUri();
-            String[] uriSplit = uri.split("/");
+            String[] uriParameter = uri.split("\\?");
+            String[] uriSplit = uriParameter[0].split("/");
+            String[] parametaers = new String[0];
+            if(uriParameter.length >= 2) {
+                parametaers = uriParameter[1].split(",");
+            }
             if(uriSplit.length > 1) {
                 switch(uriSplit[1]) {
                     case "all" -> processGetAll(uriSplit, response);
                     case "one" -> processGetOne(uriSplit, response);
+                    case "select" -> processGetSelect(uriSplit, parametaers, response);
                     case "reload" -> processGetReloadAll(uriSplit, response);
                     default -> response.setStatusCode(HttpStatus.SC_NOT_FOUND);                        
                 }
@@ -150,6 +156,34 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 else {
                     response.setStatusCode(HttpStatus.SC_NOT_FOUND);
                 }
+            }
+            else {
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            }
+        }
+        else {
+            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+        }
+    }
+
+    void processGetSelect(final String[] uriSplit, final String[] parameters, final HttpResponse response) {
+        System.out.println("processGetAll");
+        
+        if(uriSplit.length == 3) {
+            PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
+            if(propertyData != null) {
+                String body = "{";
+                int count = 0;
+                for(String parameter : parameters) {
+                    String value = (String)propertyData.properties.get(parameter);
+                    body = body + "\"" + parameter + "\":" + "\"" + value + "\"";
+                    count++;
+                    if(count < parameters.length) {
+                        body = body + ",";
+                    }
+                }
+                body = body + "}";
+                makeResponseOK(response, body);
             }
             else {
                 response.setStatusCode(HttpStatus.SC_NOT_FOUND);
