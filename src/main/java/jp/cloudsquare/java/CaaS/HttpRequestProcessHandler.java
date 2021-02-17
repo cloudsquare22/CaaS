@@ -149,7 +149,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 String value = (String)propertyData.properties.get(uriSplit[3]);
                 if(value != null) {
                     String body = "{";
-                    body = body + "\"" + uriSplit[3] + "\":" + "\"" + value + "\"";
+                    body = body + String.format(Constant.FORMAT_JSON_1LINE, uriSplit[3], value);
                     body = body + "}";
                     makeResponseOK(response, body);
                 }
@@ -176,7 +176,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
                 int count = 0;
                 for(String parameter : parameters) {
                     String value = (String)propertyData.properties.get(parameter);
-                    body = body + "\"" + parameter + "\":" + "\"" + value + "\"";
+                    body = body + String.format(Constant.FORMAT_JSON_1LINE, parameter, value);
                     count++;
                     if(count < parameters.length) {
                         body = body + ",";
@@ -234,7 +234,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         String result = "{";
         int count = 0;
         for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
-            result = result + "\"" + entry.getKey() + "\":" + "\"" + entry.getValue() + "\"";
+            result = result + String.format(Constant.FORMAT_JSON_1LINE, entry.getKey(), entry.getValue());
             count++;
             if(count < propertyData.properties.size()) {
                 result = result + ",";
