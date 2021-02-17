@@ -8,6 +8,7 @@ package jp.cloudsquare.java.CaaS;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -128,7 +129,7 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         if(uriSplit.length == 3) {
             PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
             if(propertyData != null) {
-                String body = makeBodySJSON(propertyData);
+                String body = makeBodySJSON(propertyData.properties);
                 makeResponseOK(response, body);
             }
             else {
@@ -148,9 +149,9 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
             if(propertyData != null) {
                 String value = (String)propertyData.properties.get(uriSplit[3]);
                 if(value != null) {
-                    String body = "{";
-                    body = body + String.format(Constant.FORMAT_JSON_1LINE, uriSplit[3], value);
-                    body = body + "}";
+                    Properties properties = new Properties();
+                    properties.setProperty(uriSplit[3], value);
+                    String body = makeBodySJSON(properties);
                     makeResponseOK(response, body);
                 }
                 else {
@@ -172,17 +173,14 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         if(uriSplit.length == 3) {
             PropertyData propertyData = CaaS.instance.propertyDataMap.get(uriSplit[2]);
             if(propertyData != null) {
-                String body = "{";
-                int count = 0;
+                Properties properties = new Properties();
                 for(String parameter : parameters) {
                     String value = (String)propertyData.properties.get(parameter);
-                    body = body + String.format(Constant.FORMAT_JSON_1LINE, parameter, value);
-                    count++;
-                    if(count < parameters.length) {
-                        body = body + ",";
+                    if(value != null) {
+                        properties.setProperty(parameter, value);
                     }
                 }
-                body = body + "}";
+                String body = makeBodySJSON(properties);
                 makeResponseOK(response, body);
             }
             else {
@@ -229,21 +227,20 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
     void processHead(final HttpRequest request, final HttpResponse response, final HttpContext context) {
         System.out.println("Process Head");
     }
-    
-    String makeBodySJSON(PropertyData propertyData) {
+        
+    String makeBodySJSON(Properties properties) {
         String result = "{";
         int count = 0;
-        for(Map.Entry<Object, Object> entry : propertyData.properties.entrySet()) {
+        for(Map.Entry<Object, Object> entry : properties.entrySet()) {
             result = result + String.format(Constant.FORMAT_JSON_1LINE, entry.getKey(), entry.getValue());
             count++;
-            if(count < propertyData.properties.size()) {
+            if(count < properties.size()) {
                 result = result + ",";
             }
         }
         result = result + "}";
         return result;    
     }
-    
     void makeResponseOK(final HttpResponse response, String body) {
         StringEntity stringEntity = new StringEntity(body, ContentType.create(Constant.CONTENT_TYPE_JSON));
         response.setStatusCode(HttpStatus.SC_OK);
