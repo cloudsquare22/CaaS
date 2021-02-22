@@ -198,8 +198,15 @@ public class HttpRequestProcessHandler implements HttpRequestHandler {
         if(uriSplit.length == 3) {
             CaaS caas = CaaS.instance;
             String filepath = caas.propertyDataFiles.properties.getProperty(uriSplit[2]);
+            String typeDefinitionFilepath = caas.propertyDataTypeDefinitionFiles.properties.getProperty(uriSplit[2]);
             if(filepath != null) {
-                PropertyData propertyData = new PropertyData(filepath);
+                PropertyData propertyData = null;
+                if(typeDefinitionFilepath == null) {
+                    propertyData = new PropertyData(filepath);
+                }
+                else {
+                    propertyData = new PropertyData(filepath, typeDefinitionFilepath);
+                }
                 caas.propertyDataMap.put(uriSplit[2], propertyData);
                 processGetAll(uriSplit, response);
             }
